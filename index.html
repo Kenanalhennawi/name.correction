@@ -21,14 +21,14 @@
 <body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
   <h1 class="text-2xl font-bold mb-6">Name Comparison Tool</h1>
 
-  <form id="compareForm" class="grid grid-cols-1 md:grid-cols-1 gap-4 w-full max-w-3xl" onsubmit="event.preventDefault(); compareNames();">
+  <form id="compareForm" class="grid grid-cols-1 md:grid-cols-1 gap-4 w-full max-w-3xl" onsubmit="event.preventDefault(); compareNames();" autocomplete="off">
     <div class="grid grid-cols-2 gap-4">
-      <input id="first1" placeholder="First Name 1" class="p-4 border border-gray-300 rounded-lg" />
-      <input id="last1" placeholder="Last Name 1" class="p-4 border border-gray-300 rounded-lg" />
+      <input id="first1" placeholder="First Name 1" class="p-4 border border-gray-300 rounded-lg" autocomplete="off" />
+      <input id="last1" placeholder="Last Name 1" class="p-4 border border-gray-300 rounded-lg" autocomplete="off" />
     </div>
     <div class="grid grid-cols-2 gap-4">
-      <input id="first2" placeholder="First Name 2" class="p-4 border border-gray-300 rounded-lg" />
-      <input id="last2" placeholder="Last Name 2" class="p-4 border border-gray-300 rounded-lg" />
+      <input id="first2" placeholder="First Name 2" class="p-4 border border-gray-300 rounded-lg" autocomplete="off" />
+      <input id="last2" placeholder="Last Name 2" class="p-4 border border-gray-300 rounded-lg" autocomplete="off" />
     </div>
 
     <div class="flex gap-4 mt-6">
@@ -75,30 +75,38 @@
       const first2 = document.getElementById('first2').value.trim();
       const last2 = document.getElementById('last2').value.trim();
 
-      if (!first1 || !last1 || !first2 || !last2) {
-        alert('Please fill in all fields before comparing.');
+      if (!first1 || !first2) {
+        alert('Please enter at least both first names.');
         return;
-      }
-      if ((first1 && last1 && !(first2 && last2)) || (first2 && last2 && !(first1 && last1))) {
-    alert('Please fill both first and last name if both are filled in one row.');
-    return;
       }
 
       let swapped = false;
-      const directDistance = levenshtein(first1, first2) + levenshtein(last1, last2);
-      const swappedDistance = levenshtein(first1, last2) + levenshtein(last1, first2);
+      let distanceDirect = 0;
+      let distanceSwapped = Infinity;
 
-      if (swappedDistance < directDistance) {
+      distanceDirect = levenshtein(first1, first2);
+
+      if (last1 && last2) {
+        distanceDirect += levenshtein(last1, last2);
+      }
+
+      if (last1 && first2 && first1 && last2) {
+        distanceSwapped = levenshtein(first1, last2) + levenshtein(last1, first2);
+      }
+
+      if (distanceSwapped < distanceDirect) {
         swapped = true;
       }
 
-      const inputFirst = swapped ? last2 : first2;
-      const inputLast = swapped ? first2 : last2;
+      let compareStr1 = first1;
+      let compareStr2 = swapped ? last2 : first2;
 
-      const combined1 = `${first1} ${last1}`;
-      const combined2 = `${inputFirst} ${inputLast}`;
+      if ((last1 && last2) || (last1 && swapped) || (last2 && swapped)) {
+        compareStr1 += ' ' + (last1 || '');
+        compareStr2 += ' ' + (swapped ? first2 : last2 || '');
+      }
 
-      const result = getSmartDiff(combined2, combined1);
+      const result = getSmartDiff(compareStr2, compareStr1);
 
       document.getElementById('line1').innerHTML = result.line1;
       document.getElementById('line2').innerHTML = result.line2;
