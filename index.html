@@ -21,14 +21,14 @@
 <body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
   <h1 class="text-2xl font-bold mb-6">Name Comparison Tool</h1>
 
-  <form id="compareForm" class="grid grid-cols-1 md:grid-cols-1 gap-4 w-full max-w-3xl" onsubmit="event.preventDefault(); compareNames();" autocomplete="off">
+  <form id="compareForm" class="grid grid-cols-1 md:grid-cols-1 gap-4 w-full max-w-3xl" onsubmit="event.preventDefault(); compareNames();">
     <div class="grid grid-cols-2 gap-4">
-      <input id="first1" placeholder="First Name 1" class="p-4 border border-gray-300 rounded-lg" autocomplete="off" />
-      <input id="last1" placeholder="Last Name 1" class="p-4 border border-gray-300 rounded-lg" autocomplete="off" />
+      <input id="first1" placeholder="First Name 1" class="p-4 border border-gray-300 rounded-lg" />
+      <input id="last1" placeholder="Last Name 1" class="p-4 border border-gray-300 rounded-lg" />
     </div>
     <div class="grid grid-cols-2 gap-4">
-      <input id="first2" placeholder="First Name 2" class="p-4 border border-gray-300 rounded-lg" autocomplete="off" />
-      <input id="last2" placeholder="Last Name 2" class="p-4 border border-gray-300 rounded-lg" autocomplete="off" />
+      <input id="first2" placeholder="First Name 2" class="p-4 border border-gray-300 rounded-lg" />
+      <input id="last2" placeholder="Last Name 2" class="p-4 border border-gray-300 rounded-lg" />
     </div>
 
     <div class="flex gap-4 mt-6">
@@ -77,6 +77,11 @@
 
       if (!first1 || !first2) {
         alert('Please enter at least both first names.');
+        return;
+      }
+
+      if ((first1 && first2) && ((last1 && !last2) || (!last1 && last2))) {
+        alert('Please fill both Last Name 1 and Last Name 2, or leave them both empty.');
         return;
       }
 
